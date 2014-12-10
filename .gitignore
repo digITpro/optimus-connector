@@ -12,3 +12,8 @@
 *.o
 *.a
 mkmf.log
+# Ignore RubyMine files
+.idea
+.rvmrc
+.ruby-gemset
+*~
