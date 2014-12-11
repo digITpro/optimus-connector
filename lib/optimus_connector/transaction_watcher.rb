@@ -42,6 +42,8 @@ module OptimusConnector
       ActiveSupport::Notifications.subscribe("process_action.action_controller", &method(:after_http_request))
       ActiveSupport::Notifications.subscribe("render_template.action_view", &method(:after_view_rendering))
       ActiveSupport::Notifications.subscribe("render_partial.action_view", &method(:after_partial_rendering))
+      # make sure to set config.active_support.deprecation to :notify in production.rb
+      ActiveSupport::Notifications.subscribe("deprecation.rails", &method(:after_deprecation_warning))
       ApplicationController.rescue_from(StandardError, &method(:after_exception))
     end
 
@@ -109,8 +111,18 @@ module OptimusConnector
           other_runtime: compute_duration(start, finish) - db_runtime - view_runtime
       }
 
-      transaction = {request: @request, summary: @summary, breakdown: {queries: @queries, views: @views}, error: @error}
-      Thread.new { @connector.post_transaction(transaction) }
+      transaction = {request: @request, summary: @summary, breakdown: {queries: @queries, views: @views}, error: @error, warnings: @warnings}
+      Thread.new { @connector.post("/trackings/transactions", transaction) }
+    rescue => exception
+      log_error(exception)
+    end
+
+
+    def after_deprecation_warning(_name, start, finish, _id, payload)
+      @warnings << {
+          type: "Deprecation",
+          message: payload[:message]
+      }
     rescue => exception
       log_error(exception)
     end
@@ -128,6 +140,7 @@ module OptimusConnector
       @queries = []
       @views = []
       @error = {}
+      @warnings = []
     end
 
 

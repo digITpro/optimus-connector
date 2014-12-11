@@ -22,6 +22,8 @@ Or install it yourself as:
 
 TODO: Write usage instructions here
 
+TODO mention to set config.active_support.deprecation to :notify in production.rb in order to catch deprecation warnings
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/optimus_connector/fork )
