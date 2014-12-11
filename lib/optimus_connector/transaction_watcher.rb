@@ -1,4 +1,5 @@
 require "optimus_connector/connector"
+require "optimus_connector/logger"
 
 module OptimusConnector
   class TransactionWatcher
@@ -78,7 +79,7 @@ module OptimusConnector
         }
       end
     rescue => exception
-      log_error(exception)
+      Logger.log(exception)
     end
 
     def after_view_rendering(name, start, finish, id, payload)
@@ -114,7 +115,7 @@ module OptimusConnector
       transaction = {request: @request, summary: @summary, breakdown: {queries: @queries, views: @views}, error: @error, warnings: @warnings}
       Thread.new { @connector.post("/trackings/transactions", transaction) }
     rescue => exception
-      log_error(exception)
+      Logger.log(exception)
     end
 
 
@@ -165,11 +166,6 @@ module OptimusConnector
 
     def relative_path(path)
       path.sub(Rails.root.to_s, "")
-    end
-
-    def log_error(exception)
-      Rails.logger.error("[optimus_connector] " + exception.inspect)
-      Rails.logger.error("[optimus_connector] " + exception.backtrace.join("\n[optimus_connector] "))
     end
 
     def is_query_app_relevant?(query_name)

@@ -11,7 +11,7 @@ module OptimusConnector
 
   def self.default_config
     {
-        api_url: "http://www.google.com",
+        api_url: "http://www.optimus_app_url_goes_here.com",
         app_relevant_sql_only: true,
         monitor_server: true
     }

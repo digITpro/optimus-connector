@@ -1,4 +1,5 @@
 require "optimus_connector/connector"
+require "optimus_connector/logger"
 
 module OptimusConnector
   class ServerWatcher
@@ -10,16 +11,14 @@ module OptimusConnector
     end
 
     def run
-      t = Thread.new do
-        i = 0
-        interval = 5
+      Thread.new do
+        i, interval = 0, 5
         while true
           @connector.post("/trackings/server_status", poll_server_info(i == 0))
           i = i == 23 ? 0 : i+=1
           sleep(interval)
         end
       end
-      t.abort_on_exception = true
     end
 
     #######################
