@@ -66,7 +66,7 @@ module OptimusConnector
     end
 
     def after_sql_query(_name, start, finish, _id, payload)
-      if is_query_app_relevant?(payload[:name]) || !@config[:app_relevant_sql_only]
+      if is_query_app_relevant?(payload[:name]) || !@config["filter_sql_queries"]
         file, line, method = extract_file_and_line_from_call_stack(caller)
         @queries << {
             name: payload[:name],
