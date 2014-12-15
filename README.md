@@ -28,10 +28,10 @@ default: &defaults
   application_name: "YourAppName"
 
 production:
-  <<: *default
+  <<: *defaults
 
 development:
-  <<: *default
+  <<: *defaults
 ```
 
 ## Usage
