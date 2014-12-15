@@ -114,7 +114,7 @@ module OptimusConnector
       }
 
       transaction = {request: @request, summary: @summary, breakdown: {queries: @queries, views: @views}, error: @error, warnings: @warnings}
-      Thread.new { @connector.post("/trackings/transactions", transaction) }
+      Thread.new { @connector.post("/push/web_requests", transaction) }
     rescue => exception
       Logger.log(exception)
     end
