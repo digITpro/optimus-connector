@@ -60,8 +60,7 @@ module OptimusConnector
           format: payload[:format],
           method: payload[:method],
           session: payload[:session],
-          environnment: clean_request_env(payload[:environnment]),
-          rails_env: Rails.env
+          environnment: clean_request_env(payload[:environnment])
       }
     end
 
