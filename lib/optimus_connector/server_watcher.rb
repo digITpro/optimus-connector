@@ -38,7 +38,7 @@ module OptimusConnector
     end
 
     def poll_available_cpus
-      # output format: 4, cores are counted as one each
+      # output format: 4. Cores are counted as one each
       `cat /proc/cpuinfo | grep processor | wc -l`.chomp
     end
 
@@ -47,13 +47,13 @@ module OptimusConnector
     end
 
     def poll_total_memory
-      # output format: 15G
-      `free -mhg | awk '/Mem:/ { print $2 }'`.chomp
+      # output format is in bytes: 16717996032
+      `free -mb | awk '/Mem:/ { print $2 }'`.chomp
     end
 
     def poll_used_memory
-      # output format: 15G
-      `free -mhg | awk '/buffers\\/cache/ { print $3 }'`.chomp
+      # output format is in bytes: 16717996032
+      `free -mb | awk '/buffers\\/cache/ { print $3 }'`.chomp
     end
 
     def poll_cpu_load
