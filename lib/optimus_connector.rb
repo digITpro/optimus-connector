@@ -13,9 +13,8 @@ module OptimusConnector
   end
 
   def self.config
-    config = YAML::load(File.open("#{Rails.root}/config/optimus_connector.yml"))[Rails.env]
-    config.merge!(api_url: "http://www.google.com")
-    config = config.with_indifferent_access
-    config
+    @config ||= YAML::load(File.open("#{Rails.root}/config/optimus_connector.yml"))[Rails.env]
+    @config.merge!(api_url: "http://www.google.com")
+    @config.with_indifferent_access
   end
 end

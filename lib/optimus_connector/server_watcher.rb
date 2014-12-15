@@ -12,8 +12,8 @@ module OptimusConnector
       Thread.new do
         i, interval = 0, 5
         while true
-          OptimusConnector.connector.post("/push/server_infos", poll_server_infos) if i == 0
-          OptimusConnector.connector.post("/push/server_usages", poll_server_usages)
+          OptimusConnector.connector.enqueue!("/push/server_infos", poll_server_infos) if i == 0
+          OptimusConnector.connector.enqueue!("/push/server_usages", poll_server_usages)
           i = i == 23 ? 0 : i+=1
           sleep(interval)
         end
