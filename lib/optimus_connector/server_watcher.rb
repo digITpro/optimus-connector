@@ -14,7 +14,8 @@ module OptimusConnector
       Thread.new do
         i, interval = 0, 5
         while true
-          @connector.post("/trackings/server_status", poll_server_info(i == 0))
+          @connector.post("push/server_infos", poll_server_infos) if i == 0
+          @connector.post("push/server_usages", poll_server_usages)
           i = i == 23 ? 0 : i+=1
           sleep(interval)
         end
@@ -27,10 +28,12 @@ module OptimusConnector
 
     private
 
-    def poll_server_info(long = false)
-      stats = {time: Time.current, total_memory: poll_total_memory, used_memory: poll_used_memory, cpu_load: poll_cpu_load, processes: poll_processes}
-      stats.merge!(distribution: poll_distribution, available_cpus: poll_available_cpus, security_updates: poll_security_updates) if long
-      stats
+    def poll_server_infos
+      {time: Time.current, distribution: poll_distribution, available_cpus: poll_available_cpus, security_updates: poll_security_updates}
+    end
+
+    def poll_server_usages
+      {time: Time.current, total_memory: poll_total_memory, used_memory: poll_used_memory, cpu_load: poll_cpu_load, processes: poll_processes}
     end
 
     def poll_distribution
