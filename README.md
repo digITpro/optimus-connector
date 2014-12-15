@@ -23,28 +23,15 @@ Add `OptimusConnector.new` in initializers/optimus_connector.rb
 Add your configuration in config/optimus_connector.yml, ex:
 
 ```
-common: &default_settings
-  app_id: 1234
-  license_key: 'you_secret_key'
-  monitor_transactions: false
-  monitor_server: false
-  filter_sql_queries: true
-
-development:
-  <<: *default_settings
-  monitor_transactions: true
-  monitor_server: true
-
-demo:
-  <<: *default_settings
-
-test:
-  <<: *default_settings
+default: &defaults
+  api_key: "YourSecretKey"
+  application_name: "YourAppName"
 
 production:
-  <<: *default_settings
-  monitor_transactions: true
-  monitor_server: true
+  <<: *default
+
+development:
+  <<: *default
 ```
 
 ## Usage
