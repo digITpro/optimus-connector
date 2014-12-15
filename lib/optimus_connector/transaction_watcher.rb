@@ -12,7 +12,7 @@ module OptimusConnector
     HTTP_CACHE_CONTROL HTTP_CONNECTION HTTP_USER_AGENT HTTP_FROM HTTP_NEGOTIATE
     HTTP_PRAGMA HTTP_REFERER HTTP_X_FORWARDED_FOR HTTP_CLIENT_IP)
 
-    # override process_action to add session and environnment info to the payload
+    # override process_action to add session and environment info to the payload
     ActionController::Instrumentation.send(:define_method, "process_action") do |arg|
       raw_payload = {
           controller: self.class.name,
@@ -22,7 +22,7 @@ module OptimusConnector
           method: request.method,
           path: (request.fullpath rescue "unknown"),
           session: request.session,
-          environnment: request.env
+          environment: request.env
       }
 
       ActiveSupport::Notifications.instrument("start_processing.action_controller", raw_payload.dup)
@@ -58,7 +58,7 @@ module OptimusConnector
           format: payload[:format],
           method: payload[:method],
           session: payload[:session],
-          environnment: clean_request_env(payload[:environnment])
+          environment: clean_request_env(payload[:environment])
       }
     end
 
