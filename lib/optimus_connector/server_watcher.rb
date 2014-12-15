@@ -4,9 +4,7 @@ require "optimus_connector/logger"
 module OptimusConnector
   class ServerWatcher
     WATCHED_PROCESSES = %w(ruby postgres god rsync nginx)
-    def initialize(config)
-      @config = config
-      @connector = Connector.new(@config)
+    def initialize
       run
     end
 
@@ -14,8 +12,8 @@ module OptimusConnector
       Thread.new do
         i, interval = 0, 5
         while true
-          @connector.post("/push/server_infos", poll_server_infos) if i == 0
-          @connector.post("/push/server_usages", poll_server_usages)
+          OptimusConnector.connector.post("/push/server_infos", poll_server_infos) if i == 0
+          OptimusConnector.connector.post("/push/server_usages", poll_server_usages)
           i = i == 23 ? 0 : i+=1
           sleep(interval)
         end

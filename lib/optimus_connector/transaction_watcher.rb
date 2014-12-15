@@ -35,9 +35,7 @@ module OptimusConnector
     end
 
 
-    def initialize(config)
-      @config = config
-      @connector = Connector.new(@config)
+    def initialize
       ActiveSupport::Notifications.subscribe("start_processing.action_controller", &method(:before_http_request))
       ActiveSupport::Notifications.subscribe("sql.active_record", &method(:after_sql_query))
       ActiveSupport::Notifications.subscribe("process_action.action_controller", &method(:after_http_request))
@@ -113,7 +111,7 @@ module OptimusConnector
       }
 
       transaction = {request: @request, summary: @summary, breakdown: {queries: @queries, views: @views}, error: @error, warnings: @warnings}
-      Thread.new { @connector.post("/push/web_requests", transaction) }
+      Thread.new { OptimusConnector.connector.post("/push/web_requests", transaction) }
     rescue => exception
       Logger.log(exception)
     end
