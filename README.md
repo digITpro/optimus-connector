@@ -18,8 +18,6 @@ Or install it yourself as:
 
     $ gem install optimus_connector
 
-Add `OptimusConnector.new` in initializers/optimus_connector.rb
-
 Add your configuration in config/optimus_connector.yml, ex:
 
 ```
