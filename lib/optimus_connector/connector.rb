@@ -7,6 +7,7 @@ module OptimusConnector
     def initialize(config)
       @config = config
       @queue ||= []
+      schedule_queue_processing
     end
 
     def enqueue!(path, data)
