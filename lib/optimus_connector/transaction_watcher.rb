@@ -49,7 +49,7 @@ module OptimusConnector
 
     def before_http_request(_name, start, _finish, _id, payload)
       reset_transaction
-      @request = {
+      Thread.current[:request] = {
           time: start,
           controller: payload[:controller],
           action: payload[:action],
@@ -65,7 +65,7 @@ module OptimusConnector
     def after_sql_query(_name, start, finish, _id, payload)
       if is_query_app_relevant?(payload[:name])
         file, line, method = extract_file_and_line_from_call_stack(caller)
-        @queries << {
+        query = {
             name: payload[:name],
             sql: payload[:sql],
             runtime: compute_duration(start, finish),
@@ -75,13 +75,18 @@ module OptimusConnector
                 method: method
             }
         }
+        if Thread.current[:queries]
+          Thread.current[:queries] << query
+        else
+          OptimusConnector.connector.enqueue!("/push/non_web_requests", query)
+        end
       end
     rescue => exception
       Logger.log(exception)
     end
 
     def after_view_rendering(name, start, finish, id, payload)
-      @views << {
+      Thread.current[:views] << {
           file: relative_path(payload[:identifier]),
           runtime: compute_duration(start, finish)
       }
@@ -90,7 +95,7 @@ module OptimusConnector
 
     def after_exception(exception)
       file, line = exception.backtrace.first.split(":")
-      @error = {
+      Thread.current[:error] = {
           exception: exception.class.to_s,
           backtrace: exception.backtrace,
           message: exception.message,
@@ -101,16 +106,16 @@ module OptimusConnector
     end
 
     def after_http_request(_name, start, finish, _id, payload)
-      @request.merge!(status: payload[:status])
+      Thread.current[:request].merge!(status: payload[:status])
       db_runtime = payload[:db_runtime] || 0
       view_runtime = payload[:view_runtime] || 0
-      @summary = {
+      summary = {
           db_runtime: db_runtime,
           view_runtime: view_runtime || 0,
           other_runtime: compute_duration(start, finish) - db_runtime - view_runtime
       }
 
-      transaction = {request: @request, summary: @summary, breakdown: {queries: @queries, views: @views}, error: @error, warnings: @warnings}
+      transaction = {request: Thread.current[:request], summary: summary, breakdown: {queries: Thread.current[:queries], views: Thread.current[:views]}, error: Thread.current[:error], warnings: Thread.current[:warnings]}
       OptimusConnector.connector.enqueue!("/push/web_requests", transaction)
     rescue => exception
       Logger.log(exception)
@@ -118,7 +123,7 @@ module OptimusConnector
 
 
     def after_deprecation_warning(_name, start, finish, _id, payload)
-      @warnings << {
+      Thread.current[:warnings] << {
           type: "Deprecation",
           message: payload[:message]
       }
@@ -134,12 +139,11 @@ module OptimusConnector
     private
 
     def reset_transaction
-      @request = {}
-      @summary = {}
-      @queries = []
-      @views = []
-      @error = {}
-      @warnings = []
+      Thread.current[:request] = {}
+      Thread.current[:queries] = []
+      Thread.current[:views] = []
+      Thread.current[:error] = {}
+      Thread.current[:warnings] = []
     end
 
 
