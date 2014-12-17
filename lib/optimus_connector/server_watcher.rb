@@ -3,7 +3,7 @@ require "optimus_connector/logger"
 
 module OptimusConnector
   class ServerWatcher
-    WATCHED_PROCESSES = %w(ruby postgres god rsync nginx)
+    WATCHED_PROCESSES = %w(ruby postgres god rsync nginx).freeze
     def initialize
       run
     end
@@ -33,6 +33,12 @@ module OptimusConnector
     def poll_server_usages
       {time: Time.current, total_memory: poll_total_memory, used_memory: poll_used_memory, cpu_load: poll_cpu_load, processes: poll_processes}
     end
+
+    ############################################################################################
+    ### Warning: Before adding any new system command, make sure to sanitize any user input  ###
+    ### and/or use a more secure way to execute system commands such as Open3.popopen        ###
+    ############################################################################################
+
 
     def poll_distribution
       `lsb_release -ds`.chomp
