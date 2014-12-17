@@ -7,6 +7,7 @@ module OptimusConnector
     def initialize(config)
       @config = config
       @queue ||= []
+      @process_queue = true
       schedule_queue_processing
     end
 
@@ -20,7 +21,7 @@ module OptimusConnector
 
     def schedule_queue_processing
       Thread.new do
-        while true
+        while @process_queue
           process_queue!
           sleep(30)
         end
@@ -44,6 +45,7 @@ module OptimusConnector
         http.request(post)
       end
     rescue => exception
+      @process_queue = false
       Logger.log(exception)
     end
   end
