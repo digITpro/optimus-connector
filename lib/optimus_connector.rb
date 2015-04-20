@@ -21,7 +21,7 @@ module OptimusConnector
 
     def self.config
       @config ||= YAML::load(File.open("#{Rails.root}/config/optimus_connector.yml"))[Rails.env]
-      @config.merge!(api_url: "")
+      @config.merge!(api_url: "http://optimus.digitpro.ch")
       @config.with_indifferent_access
     end
   end
