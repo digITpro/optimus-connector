@@ -43,7 +43,7 @@ module OptimusConnector
       ActiveSupport::Notifications.subscribe("render_partial.action_view", &method(:after_partial_rendering))
       # make sure to set config.active_support.deprecation to :notify in production.rb
       ActiveSupport::Notifications.subscribe("deprecation.rails", &method(:after_deprecation_warning))
-      ApplicationController.rescue_from(StandardError, &method(:after_exception))
+      ActionController::Base.rescue_from(StandardError, &method(:after_exception))
     end
 
 
